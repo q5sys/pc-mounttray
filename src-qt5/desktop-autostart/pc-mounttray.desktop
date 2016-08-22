@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1.0
+Name=TrueOS Mount Tray
+Exec=pc-mounttray
+TryExec=pc-mounttray
+Terminal=false
+Type=Application
+Icon=drive-removable-media-usb
+Categories=
+GenericName=Manage Removable Devices
+X-GNOME-Autostart-Phase=Applications
+X-MATE-Autostart-Phase=Applications
