@@ -12,10 +12,13 @@
 #include <QSystemTrayIcon>
 
 #include <QProcessEnvironment>
-#include <pcbsd-SingleApplication.h>
+#include "pcbsd-SingleApplication.h"
 
 #include "mountTray.h"
-#include "../config.h"
+
+#ifndef PREFIX
+#define PREFIX QString("/usr/local")
+#endif
 
 #include <unistd.h>
 

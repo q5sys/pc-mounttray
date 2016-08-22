@@ -1,7 +1,6 @@
 
-#include <pcbsd-utils.h>
 #include "devCheck.h"
-
+#include "globals.h"
 
 DevCheck::DevCheck(){
   //Initialize the lists of valid device types
@@ -82,7 +81,7 @@ QString DevCheck::devLabel(QString node, QString filesystem){
   QString dlabel;
   if(filesystem.toLower()=="ntfs"){
     //Use ntfslabel for ntfs filesystems
-    QStringList tmp = pcbsd::Utils::runShellCommand("ntfslabel "+devDir.absoluteFilePath(node) );
+    QStringList tmp = runShellCommand("ntfslabel "+devDir.absoluteFilePath(node) );
     if(tmp.length() ==1){
       dlabel = tmp[0]; //good result
     }else if(tmp.length()==2 && tmp[0].startsWith("Failed ")){
@@ -91,7 +90,7 @@ QString DevCheck::devLabel(QString node, QString filesystem){
     //skip outputs if 0 or >2 lines - (errors without detected label)
   }else{
     //All other filesystems
-    QStringList glout = pcbsd::Utils::runShellCommand("glabel list");
+    QStringList glout = runShellCommand("glabel list");
     int index = glout.indexOf("Geom name: "+node);
     while(index != -1){
       for(int i=index; i<glout.length(); i++){ 
@@ -147,11 +146,11 @@ bool DevCheck::devInfo(QString dev, QString* type, QString* label, QString* file
   QString camctl;
   if(detType == "USB" && QFile::exists(fullDev)){
     //make sure that it is not a SCSI device
-    camctl = pcbsd::Utils::runShellCommand( QString("camcontrol inquiry ")+node.section("s",0,0) ).join(" ");
+    camctl = runShellCommand( QString("camcontrol inquiry ")+node.section("s",0,0) ).join(" ");
     if(camctl.contains(" Fixed Direct Access SCSI")){ detType = "SCSI"; }
     if(camctl.contains("camcontrol")){ camctl.clear(); } //error or invalid device type
   }else if(detType == "SATA" && QFile::exists(fullDev)){
-    camctl = pcbsd::Utils::runShellCommand( QString("camcontrol identify ")+node.section("s",0,0) ).join(" ");
+    camctl = runShellCommand( QString("camcontrol identify ")+node.section("s",0,0) ).join(" ");
     if(camctl.contains("camcontrol")){ camctl.clear(); } //error or invalid device type
   }
   if(!camctl.isEmpty()){
@@ -243,7 +242,7 @@ QString DevCheck::getMountCommand(QString FS, QString dev, QString mntpoint){
 void DevCheck::findActiveDevices(){
   activeDevs.clear();
   //Now find any active partitions and ignore it and any children of it
-  QStringList info = pcbsd::Utils::runShellCommand("gpart show -p");
+  QStringList info = runShellCommand("gpart show -p");
   info = info.filter("freebsd").filter("[active]");
   for(int i=0; i<info.length(); i++){
     info[i].remove("=>");
@@ -262,7 +261,7 @@ bool DevCheck::getDiskInfo(QString fulldev, QString *filesystem, QString *label)
   //  -- it will return "true" if there is a valid size for the device
   //  -- NOTE: Can only detect filesystem/size/label, and NOT whether it is active
   filesystem->clear(); label->clear();
-  QStringList info = pcbsd::Utils::runShellCommand("disktype "+fulldev);
+  QStringList info = runShellCommand("disktype "+fulldev);
   QString bytes; bool blankDisk=false;
   for(int i=0; i<info.length(); i++){
     if(info[i].isEmpty() || info[i].startsWith("---")){ continue; } //skip this line
@@ -292,7 +291,7 @@ bool DevCheck::getSpecialFileInfo(QString fulldev, QString *filesystem, QString 
   //  -- it will return "true" if there is a valid size for the device and it is NOT "active"
   //  -- filesystem/label detection is very sketchy with this utility
   filesystem->clear(); label->clear();
-  QString info = pcbsd::Utils::runShellCommand("file -s "+fulldev).join("").simplified();
+  QString info = runShellCommand("file -s "+fulldev).join("").simplified();
   //Quick exit if invalid device
   if(info.contains("ERROR:") || info.contains("Device not configured") ){ return false; }
   //Get ready to look for info

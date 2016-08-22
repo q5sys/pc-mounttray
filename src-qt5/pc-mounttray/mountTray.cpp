@@ -8,10 +8,11 @@
 #include <QTranslator>
 
 #include "mountTray.h"
-#include <pcbsd-hardware.h>
-#include <pcbsd-utils.h>
+//#include <pcbsd-hardware.h>
+//#include <pcbsd-utils.h>
 
 #include "DeviceWidget.h"
+#include "globals.h"
 
 MountTray::~MountTray(){
 }
@@ -341,7 +342,7 @@ void MountTray::slotCloseMenu(){
   
 void MountTray::UpdateDeviceMenu(bool fast, bool refresh){
   QStringList avail, mounted;
-  QStringList tmp = pcbsd::Utils::runShellCommand("pc-sysconfig list-remdev list-mounteddev");
+  QStringList tmp = runShellCommand("pc-sysconfig list-remdev list-mounteddev");
   if(tmp.length()<2 || tmp.join("").contains("Client Connection Error:") ){ return; } //invalid return
   if(!tmp[0].contains("[NO INFO]")){ avail = tmp[0].split(", "); }
   if(!tmp[1].contains("[NO INFO]")){ mounted = tmp[1].split(", "); }
@@ -378,7 +379,7 @@ void MountTray::UpdateDeviceMenu(bool fast, bool refresh){
   
   //Now update the list of available network shares
   netMenu->clear();
-  QStringList info = pcbsd::Utils::runShellCommand("pc-sysconfig list-mountednetdrives").join("").split(", ");
+  QStringList info = runShellCommand("pc-sysconfig list-mountednetdrives").join("").split(", ");
   qDebug() << "Net Info:" << info;
   //Syntax for the list: [<name> (<IP>) on <directory>]
   for(int i=0; i<info.length(); i++){

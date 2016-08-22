@@ -17,8 +17,8 @@
 #include <QProcess>
 
 //libpcbsd includes
-#include <pcbsd-xdgfile.h>
-#include <pcbsd-xdgutils.h>
+//#include <pcbsd-xdgfile.h>
+//#include <pcbsd-xdgutils.h>
 
 //#include "menuItem.h"
 #include "devCheck.h"

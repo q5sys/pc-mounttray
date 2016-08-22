@@ -14,7 +14,7 @@
 #include <QPixmap>
 #include <QIcon>
 
-#include <pcbsd-utils.h>
+#include "globals.h"
 
 DeviceWidget::DeviceWidget(QWidget *parent, QString devnode) : QWidget(parent), ui(new Ui::DeviceWidget){
   ui->setupUi(this); //load the designer file
@@ -84,7 +84,7 @@ void DeviceWidget::doUpdate(){
   bool firstrun = type().isEmpty();
   //qDebug() << "Update Item:" << firstrun << quickupdates << node();
   if(firstrun || !quickupdates){
-    QStringList info = pcbsd::Utils::runShellCommand("pc-sysconfig \"devinfo "+node()+"\"").join("").split(", ");
+    QStringList info = runShellCommand("pc-sysconfig \"devinfo "+node()+"\"").join("").split(", ");
     if(info.length() < 3){ emit RefreshDeviceList(); return; } //invalid device - will probably get removed here in a moment
     //Info Output: <filesystem>, <label>, <type> [, <mountpoint>]
     //qDebug() << " - info:" << info;
@@ -134,7 +134,7 @@ void DeviceWidget::doUpdate(){
   if(isMounted){
     ui->tool_mount->setText(tr("Unmount"));
     ui->tool_mount->setIcon(QIcon(":icons/eject.png"));	
-    QString devsize = pcbsd::Utils::runShellCommand("pc-sysconfig \"devsize "+node()+"\"").join("");
+    QString devsize = runShellCommand("pc-sysconfig \"devsize "+node()+"\"").join("");
     if(devsize.contains("??")){ 
       ui->progressBar->setRange(0,0);
     }else{
@@ -158,7 +158,7 @@ void DeviceWidget::doUpdate(){
       if(QFile::exists(AMFILE)){
         QString cmd = "cat "+AMFILE;
         QString search = label() +" "+ type()+" "+ filesystem();
-        bool amount = !pcbsd::Utils::runShellCommandSearch(cmd, search).isEmpty();
+        bool amount = !runShellCommand(cmd).filter(search).isEmpty();
 	ui->check_auto->setChecked(amount);
         if(amount){
 	  mountButtonClicked();
@@ -199,12 +199,12 @@ void DeviceWidget::changeAutoMount(bool checked){
 void DeviceWidget::mountButtonClicked(){
   //mount/unmount the device (based on current status)
   if(isMounted){
-    QString res = pcbsd::Utils::runShellCommand("pc-sysconfig \"unmount "+node()+"\"").filter("[SUCCESS]").join("");
+    QString res = runShellCommand("pc-sysconfig \"unmount "+node()+"\"").filter("[SUCCESS]").join("");
     if(res.isEmpty()){
       //Can add additional types of error parsing later (TO-DO)
       //See if the user wants to try and force the unmount
       if(QMessageBox::Yes == QMessageBox::question(0, tr("Device Busy"), tr("The device appears to be busy. Do you want to forcibly unmount the device?"), QMessageBox::Yes | QMessageBox::No, QMessageBox::No)){
-        res = pcbsd::Utils::runShellCommand("pc-sysconfig \"unmount "+node()+" force\"").join("");
+        res = runShellCommand("pc-sysconfig \"unmount "+node()+" force\"").join("");
       }else{
 	return; //don't show the result message if the action was cancelled
       }	      
@@ -221,13 +221,13 @@ void DeviceWidget::mountButtonClicked(){
     QString fs = filesystem();
     if(fs=="NONE"){
       //prompt for what filesystem to try and use  to mount the device
-      QStringList fslist = pcbsd::Utils::runShellCommand("pc-sysconfig supportedfilesystems").join("").split(", ");
+      QStringList fslist = runShellCommand("pc-sysconfig supportedfilesystems").join("").split(", ");
       bool ok = false;
       fs = QInputDialog::getItem(0,tr("No Filesystem Detected"), tr("Select a filesystem to try:"), fslist, 0, false, &ok);
       if(!ok){ return; } //cancelled
     }
     //Now try to mount the device
-    QString res = pcbsd::Utils::runShellCommand("pc-sysconfig \"mount "+node()+" "+fs+"\"").filter("[SUCCESS]").join("");
+    QString res = runShellCommand("pc-sysconfig \"mount "+node()+" "+fs+"\"").filter("[SUCCESS]").join("");
     if(!res.isEmpty()){
       //Save the mountpoint for use later (return format: "[SUCCESS] <mountpoint>"
       ui->tool_run->setWhatsThis( res.section("]",1,20).simplified() );

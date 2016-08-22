@@ -4,10 +4,10 @@ QT	+= core gui widgets network
 
 CONFIG	+= qt warn_on release
 
-LIBS    += -L../libpcbsd -L/usr/local/lib -lpcbsd-ui -lpcbsd-utils
-
 HEADERS	+= mountTray.h \
 	devCheck.h \
+	globals.h \
+	pcbsd-SingleApplication.h \
 	fsWatcher.h \
 	fsDialog.h \
 	settingsDialog.h \
@@ -16,6 +16,7 @@ HEADERS	+= mountTray.h \
 SOURCES	+= main.cpp \
 	mountTray.cpp \
 	devCheck.cpp \
+	pcbsd-SingleApplication.cpp \
 	fsWatcher.cpp \
 	fsDialog.cpp \
 	settingsDialog.cpp \
@@ -24,8 +25,6 @@ SOURCES	+= main.cpp \
 FORMS += DeviceWidget.ui
 
 RESOURCES += pc-mounttray.qrc
-
-INCLUDEPATH += ../libpcbsd/utils ../libpcbsd/ui /usr/local/include
 
 QMAKE_LIBDIR = /usr/local/lib/qt5
 
@@ -98,4 +97,3 @@ TARGET = pc-mounttray
 target.path = /usr/local/bin/
 
 INSTALLS += target
-
