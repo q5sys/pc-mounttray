@@ -78,8 +78,8 @@ int  main(int argc, char ** argv)
    QTranslator translator;
    QLocale mylocale;
    QString langCode = mylocale.name();
-   if ( ! QFile::exists(PREFIX + "/share/pcbsd/i18n/MountTray_" + langCode + ".qm" ) )  langCode.truncate(langCode.indexOf("_"));
-   translator.load( QString("MountTray_") + langCode, PREFIX + "/share/pcbsd/i18n/" );
+   if ( ! QFile::exists(PREFIX + "/share/pc-mounttray/i18n/MountTray_" + langCode + ".qm" ) )  langCode.truncate(langCode.indexOf("_"));
+   translator.load( QString("MountTray_") + langCode, PREFIX + "/share/pc-mounttray/i18n/" );
    a.installTranslator( &translator );
    qDebug() << "Locale:" << langCode;
    QTextCodec::setCodecForLocale( QTextCodec::codecForName("UTF-8") ); //Force Utf-8 compliance
