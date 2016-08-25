@@ -95,8 +95,8 @@ TRANSLATIONS =  i18n/MountTray_af.ts \
 
 isEmpty(LRELEASE){ LRELEASE = $$[QT_INSTALL_BINS]/lrelease }
 
-dotrans.path=/usr/local/share/gitterdone/i18n/
-dotrans.extra=cd i18n && $${LRELEASE} -nounfinished *.ts && cp *.qm $${INSTALL_ROOT}/usr/local/share/pc-mounttray/i18n/
+dotrans.path=/usr/local/share/pc-mounttray/i18n/
+dotrans.extra=cd i18n && $${LRELEASE} -nounfinished *.ts && cp *.qm $(INSTALL_ROOT)/usr/local/share/pc-mounttray/i18n/
 
 TARGET = pc-mounttray
 target.path = /usr/local/bin/
