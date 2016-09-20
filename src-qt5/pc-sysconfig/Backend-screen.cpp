@@ -6,7 +6,7 @@ This is the screen control subsystems backend
 */
 QString Backend::getScreenBrightness(){
   //Get the current LCD brightness controls/values
-  QStringList sysctl = runShellCommand("sysctl -ae").filter(".lcd");
+  QStringList sysctl = runShellCommand("sysctl hw.").filter(".lcd");
   //See if there are any active screens
   QStringList active = sysctl.filter(".active=");
   for(int i=0; i<active.length(); i++){
@@ -39,7 +39,7 @@ QString Backend::setScreenBrightness(QString percent){
   if(percent.startsWith("+")){ percent.remove("+"); mode = 0; } //increase by percent - not full number given
   else if(percent.startsWith("-")){ percent.remove("-"); mode = 1; } //decrease by percent
   //Now get the current LCD brightness controls/values
-  QStringList sysctl = runShellCommand("sysctl -ae").filter(".lcd");
+  QStringList sysctl = runShellCommand("sysctl hw.").filter(".lcd");
   //See if there are any active screens
   QStringList active = sysctl.filter(".active=");
   for(int i=0; i<active.length(); i++){
