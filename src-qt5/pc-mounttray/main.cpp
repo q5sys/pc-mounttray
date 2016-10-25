@@ -36,9 +36,10 @@ int  main(int argc, char ** argv)
     if( id == "root" ){
       qDebug() << "pc-mounttray should not be started with root permissions";
       exit(1);
-    }/*else{
-      USERNAME = id;
-    }*/
+    }else if( !QString(getenv("PICO_CLIENT_LOGIN")).isEmpty() ){
+      qDebug() << "pc-mounttray should not be run on PICO sessions (yet)";
+      exit(1);
+    }
    //Check for "-v" flag for debugging
    QString flag = QString(argv[1]);
    if( flag == "-v" || flag == "-debug" ){ DEBUG_MODE=true; }
