@@ -30,6 +30,7 @@ void Backend::updateIntMountPoints(bool passive){
   QStringList zinfo = runShellCommand("zpool list -H -o name,altroot");
   QStringList mtpinfo = getMtpfsDevices(); //<number>::::<name>
   //qDebug() << "MTPFS Info:" << mtpinfo;
+  //qDebug() << "Mount list:" << info;
   //qDebug() << "zpool list:" << zinfo;
   //Verify that the current entries are still valid
   for(int i=0; i<IntMountPoints.length(); i++){
@@ -37,6 +38,10 @@ void Backend::updateIntMountPoints(bool passive){
     QString fs = IntMountPoints[i].section(DELIM,1,1).toLower();
     if(!node.isEmpty() && !node.startsWith("/dev/") && fs!="zfs" && fs!="mtpfs"){ node.prepend("/dev/"); }
     QString mntdir = IntMountPoints[i].section(DELIM,2,2);
+     //Ensure it is not really mounted
+    if(mntdir.isEmpty() && !info.filter(node+" on ").isEmpty()){  
+      mntdir = info.filter(node+" on ").first().section(" on ",1,1).section("(",0,0).simplified();
+    }
     //qDebug() << "Check MountPoint:" << node << fs << mntdir;
     bool invalid = false;
     if(fs=="mtpfs"){
@@ -69,6 +74,7 @@ void Backend::updateIntMountPoints(bool passive){
 	invalid = true;
         if( IntMountPoints[i].section(DELIM,4,4)=="canremove" ){
 	  //Unmounted some other way - still clean up the old mountpoint
+	  //qDebug() << "Removing old mountpoint";
 	  dir.rmdir(mntdir);
 	}
       }
@@ -113,17 +119,18 @@ void Backend::updateIntMountPoints(bool passive){
 }
 
 void Backend::cleanMediaDir(){
-  updateIntMountPoints();
+  /*updateIntMountPoints();
   QDir media("/media");
   QStringList dirs = media.entryList(QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name);
   for(int i=0; i<dirs.length(); i++){
     if( !IntMountPoints.contains(DELIM+media.absoluteFilePath(dirs[i])) ){
       //Nothing mounted here (or on a child directory)
       // This will fail if there is anything in the directory (don't bother duplicating Qt checks)
+      qDebug() << "Clean Media Dir:" << dirs[i];
       media.rmdir("/media/"+dirs[i]); 
     }
   }
-  
+  */
 }
 
 QStringList Backend::devChildren(QString dev){
@@ -671,7 +678,7 @@ QString Backend::mountRemDev(QString node, QString mntdir, QString fs){
   if(!node.startsWith("/dev/") && fs.toLower()!="zfs" && fs.toLower()!="mtpfs"){ node.prepend("/dev/"); }
   if(fs.isEmpty() || fs.toLower()=="none"){ return ("[ERROR-0] No filesystem detected -- "+node); }
   if(!mntdir.startsWith("/")){ mntdir.prepend("/media/"); }
-  //qDebug() << "Mount Device:" << node << fs << mntdir;
+  qDebug() << "Mount Device:" << node << fs << mntdir;
   // - mntdir will always be auto-created as necessary
   QDir dir(mntdir);
   //Verify Inputs
