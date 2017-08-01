@@ -15,6 +15,7 @@ share/applications/pc-mounttray.desktop
 %%DATADIR%%/i18n/MountTray_de.qm
 %%DATADIR%%/i18n/MountTray_el.qm
 %%DATADIR%%/i18n/MountTray_en_GB.qm
+%%DATADIR%%/i18n/MountTray_en_AU.qm
 %%DATADIR%%/i18n/MountTray_en_ZA.qm
 %%DATADIR%%/i18n/MountTray_es.qm
 %%DATADIR%%/i18n/MountTray_et.qm
