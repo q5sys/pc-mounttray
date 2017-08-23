@@ -1,4 +1,4 @@
-# pc-mounttray
+# pc-mounttray [DEPRECATED]
 
 **General Project Information: Table of Contents**
 
